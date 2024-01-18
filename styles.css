@@ -1,0 +1,90 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* #mainContainer{
+    background-color: aqua;
+} */
+#messageContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#searchUserName{
+    height: 100vh;
+    display: flex;
+    padding: 6%;
+    align-items: center;
+    flex-direction: column;
+    /* display: none; */
+
+}
+#logo{
+    font-size: 24vh;
+    color: blue;
+    text-shadow: 2px 2px 2px red;
+}
+#searchForm{
+    display: flex;
+    flex-direction: column;
+}
+#searchForm > #searchInput{
+    width: 55vw;
+    padding: 16px;
+    height: 10vh;
+    border-radius: 25px;
+    margin-top: 12px;
+    font-size: large;
+}
+
+#userNameSubmit{
+    margin-top: 16px;
+    width: 20vw;
+    height: 8vh;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 600;
+    font-size: larger;
+    border-radius: 24px;
+}
+
+#profileDetails{
+    margin: 8px;
+    padding: 16px;
+    display: none;
+    display: flex;
+    gap: 1vw;
+    /* border: 2px solid black; */
+    height: 36vh;
+}
+#profileImage > img{
+    width: 15vw;
+    /* border: 2px solid red; */
+    box-sizing: border-box;
+}
+#profileSummary{
+    margin-top: 6px;
+    border: 2px solid black;
+}
+#profileName{
+    padding: 8px;
+    /* border: 2px solid green; */
+}
+#descriptions{
+    padding: 8px;
+    /* border: 2px solid yellow; */
+}
+#location{
+    padding: 8px;
+    /* border: 2px solid violet; */
+}
+#socialMedia{
+    display: flex;
+    gap: 1vw;
+    padding: 8px;
+    /* border: 2px solid blue; */
+}
+
