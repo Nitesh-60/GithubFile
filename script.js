@@ -263,11 +263,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const repositoryButton = document.querySelector("#getRepositoryBtn");
     if(repositoryButton !== null){
         repositoryButton.addEventListener('click', async ()=>{
-            console.log("Clicked")
+            
+            
             perPage = document.querySelector("#perPage").value;
             page=1;
+            
             renderRepo(githubUserName,page,perPage)
-            document.querySelector("#paginationContainer").style.display = 'block'
+            
+             document.querySelector("#paginationContainer").style.display = 'block'
         })
     } 
 
