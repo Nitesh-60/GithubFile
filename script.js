@@ -94,14 +94,16 @@ const getRepoList = (repos) =>{
     let repoList = ``;
     if(repos.length){
         repos.forEach((repo)=>{
-            repoList += `<div class="repos">
+            repoList += `<div class="repos"><a href="${repo.html_url}" target="_blank">
                         <div class="repoName">
-                            <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+                            ${repo.name}
                         </div>
                         <div class="repoDescriptions">
                             ${repo.description !== null ? repo.description : "" }
+                        </div>
+                        <div class="repoLanguage">
+                            ${repo.language !== null ? repo.language : "" }
                         </div>`
-
             repoList += `<div class="repoTopics">`
             if(repo.topics){
                 repo.topics.forEach((topic)=>{
@@ -109,7 +111,7 @@ const getRepoList = (repos) =>{
                 })
                 repoList += `</div>`
             }     
-         repoList += `</div>`
+         repoList += `</a></div> `
         })
     }
     document.querySelector("#repoDetails").innerHTML = repoList
@@ -125,11 +127,10 @@ const updatePaginationBar = (profile, currentPage, perPage, githubUserName) => {
   const totalPages = Math.ceil(profile.public_repos / perPage);
   const visiblePages = 5;
 
-  // Calculate the start and end of the visible window
   let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
   let endPage = Math.min(totalPages, startPage + visiblePages - 1);
 
-  // Adjust the window if it goes beyond the limits
+  // Adjusting windows according to slide
   if (endPage - startPage + 1 < visiblePages) {
     startPage = Math.max(1, endPage - visiblePages + 1);
   }
@@ -153,29 +154,29 @@ const updatePaginationBar = (profile, currentPage, perPage, githubUserName) => {
   };
 
   
-  // Add "Olser" button
+  // Older button
   const firstPageButton = createPageLink(1);
   firstPageButton.textContent = "Older";
   paginationContainer.appendChild(firstPageButton);
 
-  // Add "Previous" button
+  // Previous button
   const previousButton = createPageLink(currentPage - 1);
   previousButton.textContent = "<<";
   paginationContainer.appendChild(previousButton);
 
 
-  // Add sliding page links
+  // sliding page links
   for (let i = startPage; i <= endPage; i++) {
     const pageLink = createPageLink(i);
     paginationContainer.appendChild(pageLink);
   }
 
-  // Add "Next" button
+  // Next button
   const nextButton = createPageLink(currentPage + 1);
   nextButton.textContent = ">>";
   paginationContainer.appendChild(nextButton);
 
-  // Add "Newer" button
+  // Newer button
   const lastPageButton = createPageLink(totalPages);
   lastPageButton.textContent = "Newer";
   paginationContainer.appendChild(lastPageButton);
@@ -184,18 +185,39 @@ const updatePaginationBar = (profile, currentPage, perPage, githubUserName) => {
 };
 
 
-
 const renderRepo = async (githubUserName, page, perPage) => {
   try {
+    
+    showLoadingSpinner();
+
     const gitRepos = await getGithubRepo(githubUserName, page, perPage);
     const completeGithubProfile = await getGithubProfile(githubUserName);
 
+    hideLoadingSpinner();
+
     getRepoList(gitRepos);
-    updatePaginationBar(completeGithubProfile, page, perPage,githubUserName);
+    updatePaginationBar(completeGithubProfile, page, perPage, githubUserName);
+
   } catch (error) {
     console.error(error);
+    hideLoadingSpinner();
   }
 };
+
+const showLoadingSpinner = () => {
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  if (loadingSpinner) {
+    loadingSpinner.style.display = "block";
+  }
+};
+
+const hideLoadingSpinner = () => {
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  if (loadingSpinner) {
+    loadingSpinner.style.display = "none";
+  }
+};
+
 
 
         
@@ -206,6 +228,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     let page = 1;
     let perPage = 10;
     let githubUserName= ''
+
+    const getAnotherUserBox = document.getElementById('getAnotherUserBox');
+    getAnotherUserBox.addEventListener('click', () => {
+        location.reload(); // Refreshes the page when clicked
+    });
 
     searchForm.addEventListener('submit', async (event)=>{
         
@@ -219,12 +246,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
             const gitProfile = await getGithubProfile(githubUserName)
            
            if(gitProfile.login){
-                // const gitRepos = await getGithubRepo(githubUserName,page,perPage)
                 getProfiledetails(gitProfile)
-                // getRepoList(gitRepos)
                 renderRepo(githubUserName,page,perPage)
                 
-                
+                getAnotherUserBox.style.display = 'block'
                 document.querySelector("#searchUserName").style.display = 'none'
                 document.querySelector("#profileDetails").style.display = 'block, flex'
                 document.querySelector("#paginationContainer").style.display = 'block'
@@ -245,11 +270,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
             document.querySelector("#paginationContainer").style.display = 'block'
         })
     } 
-
-    
-
-    
-    
-
 
 })
