@@ -43,8 +43,32 @@
         <!-- showing user repo deatils -->
         <div id="repoContainer">
             
-        </div>
+            <div id="paginationContainer">
+                <div class="header">Repositories</div>
+                <div class="repositoryNumber">
+                    <label for="perPage">Repositories Per Page:</label>
+            
+                    <select class="paginationContainer" id="perPage">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <button id="getRepositoryBtn">Get Repository</button>
+                    <div id="paginationBar">
+                    
+                    </div>
+                </div>
+            </div>
+            
+            <div id="repoDetails">
+            </div>
+
+            
         
+        </div>
     </div>
 
     <!-- showing user repos details ends here -->

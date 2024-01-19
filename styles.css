@@ -162,13 +162,15 @@ a{
 }
 #paginationContainer{
     display: flex;
+    display: none;
     justify-content: space-between;
 }
 .repositoryNumber{
     align-items: center;
     justify-content: center;
     padding: 6px;
-    margin-right: 30px;
+    margin-left: 20px;
+    margin-top: 10px;
     font-size: large;
 }
 #perPage{
@@ -186,3 +188,48 @@ a{
     background-color: rgb(92, 92, 250);
 }
 
+
+#paginationBar {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-link {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    background-color: #fff;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.page-link.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+
+.loading-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: red;
+}

@@ -41,6 +41,7 @@ const getGithubProfile = async (username) =>{
 
 ;}
 
+
 const getGithubRepo = async (username,page,perPage) =>{
 
     try {
@@ -88,23 +89,9 @@ const getProfiledetails = (data) => {
     document.querySelector("#profileDetails").innerHTML = profileData
 }
 
+
 const getRepoList = (repos) =>{
-    let repoList = ``
-    repoList += `<div id="paginationContainer">` 
-    repoList += `<div class="header">Repositories</div>`
-    repoList += `<div class="repositoryNumber">
-            <label for="perPage">Repositories Per Page:</label>
-            
-            <select class="paginationContainer" id="perPage">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-            <button id="getRepositoryBtn">Get Repository</button>
-        </div>`
-    repoList += `</div>`
-    repoList += `<div id="repoDetails">`
+    let repoList = ``;
     if(repos.length){
         repos.forEach((repo)=>{
             repoList += `<div class="repos">
@@ -120,70 +107,149 @@ const getRepoList = (repos) =>{
                 repo.topics.forEach((topic)=>{
                     repoList += `<li> ${topic}</li>`
                 })
-            repoList += `</div>`
-        }     
+                repoList += `</div>`
+            }     
          repoList += `</div>`
         })
     }
-    repoList += `</div>
-                </div>`
-    
-    document.querySelector("#repoContainer").innerHTML = repoList
+    document.querySelector("#repoDetails").innerHTML = repoList
 
 }
 
-// const getPaginatedRepositories = async(username,perPage,page)=>{
-//     try {
-//         const response = await fetch(`${API_URL}/${username}/repos?page=${page}&per_page=${perPage}`);
-//         if(response.status !== 200){
-//             new Error(`Error code - ${response.status}`);
-//         }
 
-//         const data = await response.json();
-//         return data
+
+const updatePaginationBar = (profile, currentPage, perPage, githubUserName) => {
+  const paginationContainer = document.getElementById("paginationBar");
+  paginationContainer.innerHTML = "";
+
+  const totalPages = Math.ceil(profile.public_repos / perPage);
+  const visiblePages = 5;
+
+  // Calculate the start and end of the visible window
+  let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+  // Adjust the window if it goes beyond the limits
+  if (endPage - startPage + 1 < visiblePages) {
+    startPage = Math.max(1, endPage - visiblePages + 1);
+  }
+
+  // Function to create page link and add event listener
+  const createPageLink = (pageNumber) => {
+    const pageLink = document.createElement("a");
+    pageLink.href = "#";
+    pageLink.classList.add("page-link");
+    pageLink.textContent = pageNumber;
+
+    pageLink.addEventListener("click", function () {
+      renderRepo(githubUserName, pageNumber, perPage);
+    });
+
+    if (pageNumber === currentPage) {
+      pageLink.classList.add("active");
+    }
+
+    return pageLink;
+  };
+
+  
+  // Add "Olser" button
+  const firstPageButton = createPageLink(1);
+  firstPageButton.textContent = "Older";
+  paginationContainer.appendChild(firstPageButton);
+
+  // Add "Previous" button
+  const previousButton = createPageLink(currentPage - 1);
+  previousButton.textContent = "<<";
+  paginationContainer.appendChild(previousButton);
+
+
+  // Add sliding page links
+  for (let i = startPage; i <= endPage; i++) {
+    const pageLink = createPageLink(i);
+    paginationContainer.appendChild(pageLink);
+  }
+
+  // Add "Next" button
+  const nextButton = createPageLink(currentPage + 1);
+  nextButton.textContent = ">>";
+  paginationContainer.appendChild(nextButton);
+
+  // Add "Newer" button
+  const lastPageButton = createPageLink(totalPages);
+  lastPageButton.textContent = "Newer";
+  paginationContainer.appendChild(lastPageButton);
+
+  
+};
+
+
+
+const renderRepo = async (githubUserName, page, perPage) => {
+  try {
+    const gitRepos = await getGithubRepo(githubUserName, page, perPage);
+    const completeGithubProfile = await getGithubProfile(githubUserName);
+
+    getRepoList(gitRepos);
+    updatePaginationBar(completeGithubProfile, page, perPage,githubUserName);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
         
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 
 document.addEventListener('DOMContentLoaded', ()=>{
     
     const searchForm = document.querySelector("#searchForm");
     let page = 1;
     let perPage = 10;
-    
+    let githubUserName= ''
+
     searchForm.addEventListener('submit', async (event)=>{
         
         event.preventDefault();;
         
         const searchInput = document.querySelector("#searchInput");
-        const githubUserName = searchInput.value.trim();
+        githubUserName = searchInput.value.trim();
         
         if(githubUserName.length > 0){
            
             const gitProfile = await getGithubProfile(githubUserName)
            
            if(gitProfile.login){
-                let gitRepos = await getGithubRepo(githubUserName,page,perPage)
+                // const gitRepos = await getGithubRepo(githubUserName,page,perPage)
                 getProfiledetails(gitProfile)
-                getRepoList(gitRepos)
+                // getRepoList(gitRepos)
+                renderRepo(githubUserName,page,perPage)
+                
                 
                 document.querySelector("#searchUserName").style.display = 'none'
                 document.querySelector("#profileDetails").style.display = 'block, flex'
-                // document.querySelector("#repoContainer").style.display = 'block,flex'
-           }
+                document.querySelector("#paginationContainer").style.display = 'block'
+
+                
+            }
         }
 
-        const repositoryButton = document.querySelector("#getRepositoryBtn");
+    }) 
 
-        repositoryButton.addEventListener("click", async (event)=>{
-            event.preventDefault()
+    const repositoryButton = document.querySelector("#getRepositoryBtn");
+    if(repositoryButton !== null){
+        repositoryButton.addEventListener('click', async ()=>{
             console.log("Clicked")
             perPage = document.querySelector("#perPage").value;
             page=1;
-            let gitRepos = await getGithubRepo(githubUserName,page,perPage)
-            getRepoList(gitRepos)
+            renderRepo(githubUserName,page,perPage)
+            document.querySelector("#paginationContainer").style.display = 'block'
         })
-    })  
+    } 
+
+    
+
+    
+    
+
+
 })
